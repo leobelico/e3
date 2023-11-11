@@ -6,7 +6,7 @@ use App\Models\Vehiculo;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\Importador;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 class VehiculoController extends Controller
 {
     public function index()
@@ -47,6 +47,51 @@ class VehiculoController extends Controller
             ->with('success', 'Vehículo creado exitosamente.');
     }
 
+
+    public function edit($id)
+{
+    $vehiculo = Vehiculo::findOrFail($id);
+    return view('vehiculos.editar', compact('vehiculo'));
+}
+
+public function update(Request $request, $id)
+{
+    $validateData = $request->validate([
+        'nombre' => 'required|string',
+        'tipo' => 'string|nullable',
+        'capacidad' => 'numeric',
+        'color' => 'string',
+        'precio' => 'numeric',
+        'estado' => 'integer',
+    ]);
+
+    $vehiculo = Vehiculo::findOrFail($id);
+    $vehiculo->update([
+        'nombre' => $validateData['nombre'],
+        'tipo' => $validateData['tipo'],
+        'capacidad' => $validateData['capacidad'],
+        'color' => $validateData['color'],
+        'precio' => $validateData['precio'],
+        'estado' => $validateData['estado'],
+    ]);
+
+    return redirect()->route('dashboard')
+        ->with('success', 'Vehículo actualizado exitosamente.');
+}
+
+public function destroy($id)
+{
+    $vehiculo = Vehiculo::findOrFail($id);
+    $vehiculo->delete();
+
+    return redirect()->route('dashboard')
+        ->with('success', 'Vehículo eliminado exitosamente.');
+}
+
+
+
+
+
     public function showMyVehicles()
     {
         $vehiculos = Vehiculo::where('usuario_id', Auth::id())->get();
@@ -66,9 +111,17 @@ class VehiculoController extends Controller
         return redirect()->back()->with('mensaje', 'Importación completada');
     }
 
-    public function mostrarVehiculos()
+
+    public function mostrarVehiculos(Request $request)
     {
         $vehiculos = Vehiculo::orderBy('tipo')->get();
+    
+        if ($request->has('download')) {
+            $pdf = pdf::loadView('vehiculos.vervehiculos', compact('vehiculos'));
+
+            return $pdf->download('vehiculos.pdf');
+        }
+    
         return view('vehiculos.vervehiculos', compact('vehiculos'));
     }
 
@@ -89,6 +142,30 @@ class VehiculoController extends Controller
     $vehiculo->save();
 
     return redirect()->back()->with('mensaje', 'Vehículo pedido con éxito');
+}
+
+
+
+
+public function mostrarConfirmarVehiculo()
+{
+$vehiculos = Vehiculo::all();
+return view('vehiculos.confirmarvehiculo', compact('vehiculos'));
+}
+
+
+public function confirmarvehiculo($id)
+{
+$vehiculo = Vehiculo::find($id);
+
+if (!$vehiculo) {
+    return redirect()->back()->with('mensaje', 'Vehículo no encontrado');
+}
+
+$vehiculo->estado = 3;
+$vehiculo->save();
+
+return redirect()->back()->with('mensaje', 'Vehículo comprado');
 }
 
 

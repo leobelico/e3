@@ -49,6 +49,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/vehiculos', [VehiculoController::class, 'create'])->name('vehiculos.create');
 Route::get('/vehiculos/create', [VehiculoController::class, 'create'])->name('vehiculos.create');
 Route::post('/vehiculos', [VehiculoController::class, 'store'])->name('vehiculos.store');
+
+
+Route::get('/vehiculos/{id}/edit', [VehiculoController::class, 'edit'])->name('vehiculos.edit');
+Route::put('/vehiculos/{id}', [VehiculoController::class, 'update'])->name('vehiculos.update');
+Route::delete('/vehiculos/{id}', [VehiculoController::class, 'destroy'])->name('vehiculos.destroy');
+
+
 Route::get('/vehiculos', [VehiculoController::class, 'index'])->name('vehiculos.index');
 Route::get('/vermisproductos', [VehiculoController::class, 'showMyProducts'])->name('vehiculos.showmyproducts');
 Route::get('/importar-vehiculos', [VehiculoController::class, 'mostrarFormularioImportar']);
@@ -56,6 +63,9 @@ Route::post('/importar-vehiculos', [VehiculoController::class, 'importar'])->nam
 Route::get('/dashboard/importar-vehiculos', [VehiculoController::class, 'mostrarFormularioImportar']);
 Route::get('/ver-vehiculos', [VehiculoController::class, 'mostrarVehiculos'])->name('ver-vehiculos');
 Route::get('/compra-vehiculo', [VehiculoController::class, 'mostrarComprarVehiculo'])->name('compra-vehiculo');
+
+Route::get('/confirmar-vehiculo', [VehiculoController::class, 'mostrarConfirmarVehiculo'])->name('confirmar-vehiculo');
+Route::put('/confirmar-vehiculos/{id}', [VehiculoController::class, 'confirmarvehiculo'])->name('confirmar-vehiculos');
 
 Route::get('/exportar-vehiculos', [VehiculoExportController::class, 'exportar'])->name('exportar-vehiculos');
 Route::put('/comprar-vehiculo/{id}', [VehiculoController::class, 'comprarVehiculo'])->name('comprar-vehiculo');

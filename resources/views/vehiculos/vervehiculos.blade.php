@@ -23,9 +23,11 @@
                                     <th>Color</th>
                                     <th>Precio</th>
                                     <th>Estado</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                <?php $totalVentas = 0; ?>
                                 @foreach($vehiculos as $vehiculo)
                                     <tr>
                                         <td>{{ $vehiculo->nombre }}</td>
@@ -34,10 +36,27 @@
                                         <td>{{ $vehiculo->color }}</td>
                                         <td>{{ $vehiculo->precio }}</td>
                                         <td>{{ $vehiculo->estado }}</td>
+                                        <td>
+                                            <a href="{{ route('vehiculos.edit', $vehiculo->id) }}" class="bg-blue-500 text-white px-4 py-2 rounded">Editar</a>
+                                            
+                                            <form method="POST" action="{{ route('vehiculos.destroy', $vehiculo->id) }}" style="display: inline-block">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded" onclick="return confirm('¿Estás seguro?')">Borrar</button>
+                                            </form>
+                                        </td>
                                     </tr>
+
+                                    @if($vehiculo->estado == 3)
+                                        <?php $totalVentas += $vehiculo->precio; ?>
+                                    @endif
                                 @endforeach
                             </tbody>
                         </table>
+
+                        @if($totalVentas > 0)
+                            <p>Total de ventas: ${{ $totalVentas }}</p>
+                        @endif
                     @endif
                 </div>
                 <a href="{{ route('exportar-vehiculos') }}">Exportar a Excel</a>
